@@ -68,21 +68,20 @@ if run:
     # ── 出力カード ──────────────────────────────────────
     st.divider()
 
-    # ▼ ヒーロー① 設置する診断（実物の診断名を最優先で大きく。無ければタイプ）
-    has_existing = bool(rec.get("pu_diagnosis_name"))
-    install_name = rec["pu_diagnosis_name"] if has_existing else f"{rec['diagnosis_type']}（新規作成）"
-    st.markdown("##### 🎯 設置する診断")
+    # ▼ ヒーロー① おすすめ診断タイプ（これが答え。9ジャンル一貫）
+    st.markdown("##### 🎯 おすすめ診断タイプ")
     st.markdown(
-        f"<div style='font-size:2rem;font-weight:800;line-height:1.2;margin:-4px 0 8px'>{install_name}</div>",
+        f"<div style='font-size:2rem;font-weight:800;line-height:1.2;margin:-4px 0 8px'>{rec['diagnosis_type']}</div>",
         unsafe_allow_html=True,
     )
-    # 補助タグ（診断名と競合しないよう「相性タイプ」として格下げ表示）
     st.markdown(
         f"`検索意図: {INTENT_BADGE.get(cls['intent'], cls['intent'])}` &nbsp; "
-        f"`相性タイプ: {rec['diagnosis_type']}` &nbsp; "
         f"`確信度: {cls.get('confidence','—')}`",
         unsafe_allow_html=True,
     )
+    # 手持ち診断は"参考"として小さく表示（タイプと張り合わせない）
+    if rec.get("pu_diagnosis_name"):
+        st.caption(f"このジャンルの手持ち診断：{rec['pu_diagnosis_name']}")
 
     # ▼ ヒーロー② 出すPU文言（コピーボタン付きで目立たせる）
     st.markdown("##### 💬 この記事に出すPU文言")

@@ -97,7 +97,7 @@ def _decide_diagnosis_type(
     if intent == "指名":
         if genre_types:
             return genre_types[0], f"指名KWはどの診断でもCV可。このジャンルの実績タイプ「{genre_types[0]}」を踏襲"
-        return "（既存診断のいずれか）", "指名KWはどの診断タイプでもCVしやすい"
+        return "どのタイプでもOK", "指名KWはどの診断タイプでもCVしやすい"
 
     # ジャンル実績と「相性の良いタイプ」の積集合を優先
     if genre_types:
@@ -132,4 +132,4 @@ def _decide_diagnosis_type(
     )
     if preferred:
         return preferred[0], f"検索意図「{intent}」に相性の良いタイプ（実績データなし）"
-    return "（既存診断のいずれか）", f"検索意図「{intent}」はどのタイプでも可"
+    return "どのタイプでもOK", f"検索意図「{intent}」はどのタイプでも可"
