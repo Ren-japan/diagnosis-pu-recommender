@@ -67,49 +67,58 @@ if run:
 
     # ── 出力カード ──────────────────────────────────────
     st.divider()
-    st.subheader(f"おすすめ診断：{rec['diagnosis_type']}")
-    if rec.get("pu_diagnosis_name"):
-        st.caption(f"既存診断名：{rec['pu_diagnosis_name']}")
 
-    col1, col2, col3 = st.columns(3)
-    col1.metric("検索意図", INTENT_BADGE.get(cls["intent"], cls["intent"]))
-    col2.metric("推奨PU訴求軸", AXIS_BADGE.get(rec["axis"], rec["axis"]))
-    col3.metric("確信度", cls.get("confidence", "—"))
+    # ▼ ヒーロー① 設置する診断（実物の診断名を最優先で大きく。無ければタイプ）
+    has_existing = bool(rec.get("pu_diagnosis_name"))
+    install_name = rec["pu_diagnosis_name"] if has_existing else f"{rec['diagnosis_type']}（新規作成）"
+    st.markdown("##### 🎯 設置する診断")
+    st.markdown(
+        f"<div style='font-size:2rem;font-weight:800;line-height:1.2;margin:-4px 0 8px'>{install_name}</div>",
+        unsafe_allow_html=True,
+    )
+    # 補助タグ（診断名と競合しないよう「相性タイプ」として格下げ表示）
+    st.markdown(
+        f"`検索意図: {INTENT_BADGE.get(cls['intent'], cls['intent'])}` &nbsp; "
+        f"`相性タイプ: {rec['diagnosis_type']}` &nbsp; "
+        f"`確信度: {cls.get('confidence','—')}`",
+        unsafe_allow_html=True,
+    )
 
-    st.markdown(f"**診断タイプの根拠：** {rec['diagnosis_basis']}")
-    st.markdown(f"**検索意図の判定理由：** {cls['intent_reason']}")
-    st.markdown(f"**訴求軸の判定理由：** {cls['axis_reason']}")
-    st.markdown(f"**訴求軸の意味：** {rec['axis_label']}")
-    st.caption(f"💡 {rec['rule_reason']}（相性が合えば想定FCVR ×{rec['expected_fcvr_lift']}）")
+    # ▼ ヒーロー② 出すPU文言（コピーボタン付きで目立たせる）
+    st.markdown("##### 💬 この記事に出すPU文言")
+    st.markdown(
+        f"推奨訴求軸：**{AXIS_BADGE.get(rec['axis'], rec['axis'])}** — {rec['axis_label']}"
+    )
+    if rec["pu_variants"]:
+        st.caption("↓ この訴求軸の既存文言。右上のアイコンでコピーできる")
+        for v in rec["pu_variants"]:
+            st.code(v.get("copy", ""), language=None)
+    elif rec.get("all_pu_variants"):
+        st.warning(
+            f"この訴求軸（{rec['axis']}）の既存PUは無し。"
+            "下の「既存PU文言一覧」から近い軸を流用するか、この軸で新規作成。"
+        )
+    else:
+        st.info(f"このジャンルは既存PU未登録 → 上の訴求軸で新規作成を推奨")
 
-    # 注意・警告
+    # 判定理由（折りたたみ。普段は結論だけ見たいので隠す）
+    with st.expander("なぜこの判定？（根拠を見る）"):
+        st.markdown(f"**検索意図の理由：** {cls['intent_reason']}")
+        st.markdown(f"**訴求軸の理由：** {cls['axis_reason']}")
+        st.markdown(f"**診断タイプの根拠：** {rec['diagnosis_basis']}")
+        st.caption(f"💡 {rec['rule_reason']}（相性が合えば想定FCVR ×{rec['expected_fcvr_lift']}）")
+        if rec["genre_types"]:
+            st.caption(f"このジャンルの実績診断タイプ → {', '.join(rec['genre_types'])}")
+
+    # 注意・警告（あれば目立たせる）
     for w in rec["warnings"]:
         if w.startswith("⚠️"):
             st.warning(w)
         else:
             st.info(w)
 
-    # PU在庫の状況
-    st.divider()
-    st.markdown("#### 📌 PU訴求軸タグと在庫")
-    st.write(rec["pu_inventory_note"])
-    if rec["pu_variants"]:
-        st.markdown("**この訴求軸で使える既存PU文言：**")
-        for v in rec["pu_variants"]:
-            line = f"- 「{v.get('copy', '')}」"
-            if v.get("file"):
-                line += f"  `{v['file']}`"
-            st.markdown(line)
-
     # このジャンルの全PU文言（軸を問わず。anxiety/benefitなど3軸外も見せる）
     if rec.get("all_pu_variants"):
         with st.expander(f"このジャンルの既存PU文言 全{len(rec['all_pu_variants'])}本を見る"):
             for v in rec["all_pu_variants"]:
                 st.markdown(f"- `{v.get('appeal_axis','?')}` 「{v.get('copy','')}」")
-
-    # ジャンルの実績タイプ（参考）
-    if rec["genre_types"]:
-        st.caption(f"参考：このジャンルで実際に使われている診断タイプ → {', '.join(rec['genre_types'])}")
-
-    with st.expander("判定の生データ（デバッグ用）"):
-        st.json({"classification": cls, "recommendation": rec})
