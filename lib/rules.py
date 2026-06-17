@@ -51,6 +51,10 @@ APPEAL_AXES = {
     "cost": "費用軸：安くしたい/費用を抑えたい → 金銭的不安に訴求",
     "choice": "選択軸：ぴったりのを見つけたい/見極めたい → 選択不安に訴求",
     "method": "方法軸：自分に合った方法を知りたい → 情報不足に訴求",
+    # 以下は実PU在庫から発見された追加軸（cost/choice/methodの3軸に収まらないもの）
+    "anxiety": "不安喚起軸：放置するの不安/このままでいいのか → 現状の不安を突く",
+    "benefit": "ベネフィット軸：治して自信をつけたい → 解決後の理想像に訴求",
+    "other": "その他",
 }
 
 
@@ -59,8 +63,8 @@ APPEAL_AXES = {
 # mapping_key  : article_mapping.csv のジャンル列の値（None=実績マッピング未登録）
 # pu_key       : pu_master.json の genres キー（None=既存PU在庫なし）
 GENRES = {
-    "医療ダイエット(GLP-1)": {"mapping_key": "医療ダイエット", "pu_key": None},
-    "包茎手術": {"mapping_key": "包茎", "pu_key": None},
+    "医療ダイエット(GLP-1)": {"mapping_key": "医療ダイエット", "pu_key": "医療ダイエット"},
+    "包茎手術": {"mapping_key": "包茎", "pu_key": "包茎"},
     "ED": {"mapping_key": "ED", "pu_key": None},
     "FAGA": {"mapping_key": None, "pu_key": None},
     "AGA": {"mapping_key": None, "pu_key": "AGA"},

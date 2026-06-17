@@ -214,6 +214,120 @@
       "analysis": {
         "observation": "Driveに離脱PU専用フォルダがなかった。CTAフォルダにLINE診断CTA画像が1点あったが、離脱ポップアップとは別の可能性"
       }
+    },
+    "包茎": {
+      "diagnosis_name": "包茎治し方診断",
+      "variants": [
+        {
+          "copy": "治療必要度が気になる",
+          "appeal_axis": "anxiety",
+          "image_url": "https://img.winut.net/125/NRLPiO8jxefz56Kw-1773730327.jpg",
+          "source": "houkei_ridatsu_20260417.csv"
+        },
+        {
+          "copy": "放置するの不安",
+          "appeal_axis": "anxiety",
+          "image_url": "https://img.winut.net/125/Z4C2SANwXEizFyV1-1773730297.jpg",
+          "source": "houkei_ridatsu_20260417.csv"
+        },
+        {
+          "copy": "ちょっと不安",
+          "appeal_axis": "anxiety",
+          "image_url": "https://img.winut.net/125/pxYTDN6I0rhGtmui-1773730224.jpg",
+          "source": "houkei_ridatsu_20260417.csv"
+        },
+        {
+          "copy": "包茎タイプ治療必要度気になる",
+          "appeal_axis": "anxiety",
+          "image_url": "https://img.winut.net/125/srJo7cL58sdoHiBj-1773730178.jpg",
+          "source": "houkei_ridatsu_20260417.csv"
+        },
+        {
+          "copy": "自分の包茎タイプわからない",
+          "appeal_axis": "choice",
+          "image_url": "https://img.winut.net/125/Vzl1hZBdMkKZwGdq-1773730066.jpg",
+          "source": "houkei_ridatsu_20260417.csv"
+        },
+        {
+          "copy": "このままでいいのか",
+          "appeal_axis": "anxiety",
+          "image_url": "https://img.winut.net/125/m6qDuXzuDQEl89Uv-1773729931.jpg",
+          "source": "houkei_ridatsu_20260417.csv"
+        },
+        {
+          "copy": "治し方が知りたい",
+          "appeal_axis": "method",
+          "image_url": "https://img.winut.net/125/JjmbSj5A3sfrnR2x-1772613752.jpg",
+          "source": "houkei_ridatsu_20260417.csv"
+        },
+        {
+          "copy": "放っておいて不安",
+          "appeal_axis": "anxiety",
+          "image_url": "https://img.winut.net/125/oN6oXe7wk4vD7YPE-1772615831.jpg",
+          "source": "houkei_ridatsu_20260417.csv"
+        },
+        {
+          "copy": "自分に合った治し方が知りたい",
+          "appeal_axis": "method",
+          "image_url": "https://img.winut.net/125/2D8c3N4ylvcMGRpT-1772613467.jpg",
+          "source": "houkei_ridatsu_20260417.csv"
+        },
+        {
+          "copy": "包茎を治して夜の自信をつけたい!",
+          "appeal_axis": "benefit",
+          "image_url": "https://img.winut.net/125/2P8jZFVliFO9a794-1752216800.jpg",
+          "source": "houkei_ridatsu_20260417.csv"
+        },
+        {
+          "copy": "包茎を治して自分に自信をつけたい!",
+          "appeal_axis": "benefit",
+          "image_url": "https://img.winut.net/125/1fFHaXI1eVhCkSt6-1752216587.jpg",
+          "source": "houkei_ridatsu_20260417.csv"
+        },
+        {
+          "copy": "自分にぴったりの包茎の直し方を見つける!",
+          "appeal_axis": "choice",
+          "image_url": "https://img.winut.net/125/pkZpS5EzR8lxGz4M-1752216558.jpg",
+          "source": "houkei_ridatsu_20260417.csv"
+        }
+      ],
+      "analysis": {
+        "variant_count": 12,
+        "axis_distribution": {
+          "anxiety": 6,
+          "choice": 2,
+          "method": 2,
+          "benefit": 2
+        },
+        "imported_from_csv": true
+      }
+    },
+    "医療ダイエット": {
+      "diagnosis_name": "ダイエット方法診断",
+      "variants": [
+        {
+          "copy": "結局、自分に1番合うダイエットが知りたい！",
+          "appeal_axis": "method",
+          "source": "image:seo-diet_ridatsuPU-1"
+        },
+        {
+          "copy": "自分にぴったりのダイエットが知りたい！",
+          "appeal_axis": "method",
+          "source": "image:seo-diet_ridatsuPU-2"
+        },
+        {
+          "copy": "楽に痩せられるダイエットが知りたい…",
+          "appeal_axis": "method",
+          "source": "image:seo-diet_ridatsuPU-3"
+        }
+      ],
+      "analysis": {
+        "variant_count": 3,
+        "axis_distribution": {
+          "method": 3
+        },
+        "imported_from_csv": true
+      }
     }
   }
 }

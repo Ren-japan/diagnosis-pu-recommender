@@ -59,6 +59,8 @@ def recommend(classification: dict, genre_label: str) -> dict:
     # ── PU訴求軸まわり ──────────────────────────────────────
     variants_by_axis = pu_variants_by_axis(pu_key)
     pu_variants = variants_by_axis.get(axis, [])
+    # 全PU文言（軸を問わず一覧表示用）。anxiety/benefitなど3軸外も隠さない
+    all_variants = [v for vs in variants_by_axis.values() for v in vs]
     if not pu_key:
         pu_inventory_note = "このジャンルの既存PU在庫は未登録 → この訴求軸で新規作成を推奨"
     elif pu_variants:
@@ -79,6 +81,7 @@ def recommend(classification: dict, genre_label: str) -> dict:
         "genre_types": genre_types,
         "pu_diagnosis_name": pu_diagnosis_name(pu_key),
         "pu_variants": pu_variants,
+        "all_pu_variants": all_variants,
         "pu_inventory_note": pu_inventory_note,
         "expected_fcvr_lift": rule["expected_fcvr_lift"],
         "rule_reason": rule["reason"],

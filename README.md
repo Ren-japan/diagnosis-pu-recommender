@@ -44,7 +44,25 @@ streamlit run app.py
 3. アプリ設定の **Secrets** に `GEMINI_API_KEY = "..."` を貼る（line-image-generatorと同じキー流用可）
 4. Deploy → 新URLが発行される
 
+## PU在庫の拡充（既存PU文言の取り込み）
+
+既存PUの実文言は LINE離脱防止ツール（Winut）の「離脱防止タグ情報」CSVから自動取り込みする。
+**手打ち・捏造はしない。** 実データのみ。
+
+```bash
+# 1. ジャンルの「離脱防止タグ情報」CSV（Shift-JIS）を置く
+cp 〇〇_離脱防止タグ情報_YYYYMMDD.csv data/raw_exports/
+# 2. 取り込み実行 → data/pu_master.json が更新される
+python3 tools/import_pu_inventory.py
+```
+
+- 取り込み済み：**包茎**（CSV）/ **医療ダイエット**（PU画像から書き起こし）
+- 残り7ジャンル（ED/FAGA/AGA/ピル/ほくろ/いびき/リカバリーウェア）は各CSVを置いて再実行すれば増える
+- パス→ジャンルの対応・訴求軸キーワードは `tools/import_pu_inventory.py` 内で定義
+
+> 💡 実PU文言の分析で、cost/choice/method の3軸に収まらない軸（**不安喚起 / ベネフィット**）が
+> 多用されていることが判明（特に包茎）。`appeal_axis` には anxiety / benefit / other も追加済み。
+
 ## データ更新
 
-`data/article_mapping.csv` と `data/pu_master.json` は line-dashboard からのコピー。
-元データが更新されたら再コピーする（将来は同期スクリプト化を検討）。
+`data/article_mapping.csv` は line-dashboard からのコピー。元データが更新されたら再コピーする。

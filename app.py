@@ -101,6 +101,12 @@ if run:
                 line += f"  `{v['file']}`"
             st.markdown(line)
 
+    # このジャンルの全PU文言（軸を問わず。anxiety/benefitなど3軸外も見せる）
+    if rec.get("all_pu_variants"):
+        with st.expander(f"このジャンルの既存PU文言 全{len(rec['all_pu_variants'])}本を見る"):
+            for v in rec["all_pu_variants"]:
+                st.markdown(f"- `{v.get('appeal_axis','?')}` 「{v.get('copy','')}」")
+
     # ジャンルの実績タイプ（参考）
     if rec["genre_types"]:
         st.caption(f"参考：このジャンルで実際に使われている診断タイプ → {', '.join(rec['genre_types'])}")
