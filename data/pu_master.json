@@ -1,0 +1,219 @@
+{
+  "meta": {
+    "description": "各ジャンルの離脱PU（ポップアップ）のクリエイティブ情報",
+    "last_updated": "2026-02-18",
+    "structure_note": "全PUは「診断型ポップアップ」。記事離脱時に表示され、はい→LINE友だち追加→診断開始の流れ"
+  },
+  "common_structure": {
+    "flow": "記事LP閲覧 → 離脱検知 → PUポップアップ表示 → 「はい」クリック → LINE友だち追加 → 診断コンテンツ開始",
+    "pu_format": {
+      "header": "ぴったりの〇〇がわかる！",
+      "title": "〇〇診断",
+      "appeal_copy": "質問形式（〜したい？/〜したい！）",
+      "cta_label": "LINE限定たった15秒 / LINEでたった15秒",
+      "buttons": {
+        "positive": "はい（主要CTA）",
+        "negative": "いいえ or そうかも…（ジャンルにより異なる）"
+      },
+      "visual": "イラスト（人物+ジャンル関連アイコン）"
+    },
+    "appeal_axes": {
+      "cost": "費用軸：安くしたい/費用を抑えたい → ユーザーの金銭的不安に訴求",
+      "choice": "選択軸：ぴったりのを見つけたい/見極めたい → ユーザーの選択不安に訴求",
+      "method": "方法軸：自分に合った方法を知りたい → ユーザーの情報不足に訴求"
+    }
+  },
+  "genres": {
+    "AGA": {
+      "diagnosis_name": "AGAクリニック診断",
+      "header": "あなたにぴったりの / LINEで簡単15秒",
+      "button_style": "はい▶（緑）/ いいえ（グレー）",
+      "button_psychology": "直接的二択。男性向け医療で決断を迫るスタイル",
+      "badge": "無料診断",
+      "variants": [
+        {
+          "id": "aga_1",
+          "copy": "できるだけ費用を抑えたい？",
+          "appeal_axis": "cost",
+          "illustration": "悩む男性（頭を触る）",
+          "file": "1.png"
+        },
+        {
+          "id": "aga_2",
+          "copy": "できるだけ費用を抑えたい！",
+          "appeal_axis": "cost",
+          "illustration": "悩む男性（腕組み）",
+          "file": "2.png"
+        },
+        {
+          "id": "aga_3",
+          "copy": "できるだけ費用を抑えたい！",
+          "appeal_axis": "cost",
+          "illustration": "男性（指さし＋時計）",
+          "file": "3.png"
+        },
+        {
+          "id": "aga_4",
+          "copy": "どのクリニックがいいか見極めたい！",
+          "appeal_axis": "choice",
+          "illustration": "悩む男性（腕組み）",
+          "file": "4.png"
+        },
+        {
+          "id": "aga_5",
+          "copy": "どのクリニックがいいか見極めたい！",
+          "appeal_axis": "choice",
+          "illustration": "医師（ピースサイン）",
+          "file": "5.png"
+        },
+        {
+          "id": "aga_6",
+          "copy": "できるだけ費用を抑えて薄毛治療をしたい！",
+          "appeal_axis": "cost",
+          "illustration": "男性（指さし＋時計）",
+          "file": "AGA_LINE離脱POPUP.png"
+        }
+      ],
+      "analysis": {
+        "cost_variants": 4,
+        "choice_variants": 2,
+        "dominant_axis": "cost（費用訴求が4/6で支配的）",
+        "observation": "費用軸に偏りすぎ。選択軸や方法軸のバリエーションが不足"
+      }
+    },
+    "メンズ脱毛": {
+      "diagnosis_name": "脱毛タイプ診断",
+      "header": "ぴったりの脱毛スタイルがわかる！",
+      "button_style": "はい（ゴールド）/ そうかも…（グレー）",
+      "button_psychology": "「いいえ」を避けてソフトに誘導。「そうかも」=否定しにくい心理を利用",
+      "variants": [
+        {
+          "id": "mens_1",
+          "copy": "どのクリニックがいいか見極めたい？",
+          "appeal_axis": "choice",
+          "file": "1.png"
+        },
+        {
+          "id": "mens_2",
+          "copy": "自分にぴったりのクリニックを知りたい？",
+          "appeal_axis": "choice",
+          "file": "2.png"
+        },
+        {
+          "id": "mens_3",
+          "copy": "自分に合った脱毛方法を知りたい？",
+          "appeal_axis": "method",
+          "file": "3.png"
+        },
+        {
+          "id": "mens_4",
+          "copy": "なるべく安く脱毛したい？",
+          "appeal_axis": "cost",
+          "file": "4.png"
+        },
+        {
+          "id": "mens_5",
+          "copy": "できるだけ費用を抑えたい？",
+          "appeal_axis": "cost",
+          "file": "5.png"
+        }
+      ],
+      "analysis": {
+        "cost_variants": 2,
+        "choice_variants": 2,
+        "method_variants": 1,
+        "dominant_axis": "バランス型（費用2/選択2/方法1）",
+        "observation": "3軸使えているが、方法軸が1つだけ。興味ツリーの「答えを隠す」パターンが未使用"
+      }
+    },
+    "レディース脱毛": {
+      "diagnosis_name": "脱毛クリニック診断",
+      "header": "ぴったりの脱毛クリニックがわかる",
+      "button_style": "はい（ピンク）/ そうかも…（水色）",
+      "button_psychology": "女性向けの柔らかいトーン。パステルカラーで親しみやすさ重視",
+      "design_note": "ピンク×水色のパステル配色。メンズ脱毛の濃紺×ゴールドとは対照的",
+      "variants": [
+        {
+          "id": "ld_1",
+          "copy": "自分にぴったりのクリニックを見つけたい？",
+          "appeal_axis": "choice",
+          "file": "datsumo_ridatsu-1.jpg"
+        },
+        {
+          "id": "ld_2",
+          "copy": "どのクリニックが自分にぴったりか見極めたい？",
+          "appeal_axis": "choice",
+          "file": "datsumo_ridatsu-2.jpg"
+        },
+        {
+          "id": "ld_3",
+          "copy": "気になる部分だけ脱毛したい？",
+          "appeal_axis": "method",
+          "file": "datsumo_ridatsu-3.jpg"
+        },
+        {
+          "id": "ld_4",
+          "copy": "あなたにぴったりの脱毛クリニックを見つける！",
+          "appeal_axis": "choice",
+          "file": "datsumo_ridatsu-4.jpg"
+        }
+      ],
+      "analysis": {
+        "cost_variants": 0,
+        "choice_variants": 3,
+        "method_variants": 1,
+        "dominant_axis": "choice（選択訴求が3/4で支配的）",
+        "observation": "費用軸が完全に欠落。女性ターゲットで価格訴求を避けている可能性があるが、費用テストの余地あり"
+      }
+    },
+    "楽器買取": {
+      "diagnosis_name": "買取業者診断",
+      "header": "ぴったりの買取業者がわかる！",
+      "button_style": "はい（赤）/ いいえ（ベージュ）",
+      "button_psychology": "直接的二択。買取=取引なので決断を促すスタイル",
+      "design_note": "茶色×赤の和風デザイン。楽器のイラスト（サックス、ギター）",
+      "variants": [
+        {
+          "id": "gakki_1",
+          "copy": "とにかく高く買い取って欲しい？",
+          "appeal_axis": "cost",
+          "file": "gakki_ridatsu-1.jpg"
+        },
+        {
+          "id": "gakki_2",
+          "copy": "結局、どの買取業者がいいかわからない？",
+          "appeal_axis": "choice",
+          "file": "gakki_ridatsu-2.jpg",
+          "note": "サムネから推測"
+        },
+        {
+          "id": "gakki_3",
+          "copy": "あなたにぴったりの買取業者を探す？",
+          "appeal_axis": "choice",
+          "file": "gakki_ridatsu-3.jpg",
+          "note": "サムネから推測"
+        },
+        {
+          "id": "gakki_4",
+          "copy": "自分にぴったりの買取業者を探す？",
+          "appeal_axis": "choice",
+          "file": "gakki_ridatsu-4.jpg",
+          "note": "サムネから推測"
+        }
+      ],
+      "analysis": {
+        "cost_variants": 1,
+        "choice_variants": 3,
+        "dominant_axis": "choice（選択訴求が3/4）",
+        "observation": "買取ジャンルなのに「高く売りたい」訴求が1/4のみ。費用軸の強化余地あり"
+      }
+    },
+    "マットレス": {
+      "diagnosis_name": "不明（離脱PUフォルダ未発見）",
+      "variants": [],
+      "analysis": {
+        "observation": "Driveに離脱PU専用フォルダがなかった。CTAフォルダにLINE診断CTA画像が1点あったが、離脱ポップアップとは別の可能性"
+      }
+    }
+  }
+}
