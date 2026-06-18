@@ -12,6 +12,7 @@ from __future__ import annotations
 import streamlit as st
 
 from lib.classifier import classify, get_api_key
+from lib.genre_catalog import GENRE_CATALOG
 from lib.recommender import recommend
 from lib.rules import GENRES
 
@@ -68,20 +69,19 @@ if run:
     # ── 出力カード ──────────────────────────────────────
     st.divider()
 
-    # ▼ ヒーロー① おすすめ診断タイプ（これが答え。9ジャンル一貫）
-    st.markdown("##### 🎯 おすすめ診断タイプ")
+    # ▼ ヒーロー① 設置する診断（カタログ上の実際の診断名）
+    st.markdown("##### 🎯 設置する診断")
     st.markdown(
-        f"<div style='font-size:2rem;font-weight:800;line-height:1.2;margin:-4px 0 8px'>{rec['diagnosis_type']}</div>",
+        f"<div style='font-size:2rem;font-weight:800;line-height:1.2;margin:-4px 0 8px'>{rec['diagnosis_name']}</div>",
         unsafe_allow_html=True,
     )
-    st.markdown(
-        f"`検索意図: {INTENT_BADGE.get(cls['intent'], cls['intent'])}` &nbsp; "
-        f"`確信度: {cls.get('confidence','—')}`",
-        unsafe_allow_html=True,
-    )
-    # 手持ち診断は"参考"として小さく表示（タイプと張り合わせない）
-    if rec.get("pu_diagnosis_name"):
-        st.caption(f"このジャンルの手持ち診断：{rec['pu_diagnosis_name']}")
+    tags = [f"`検索意図: {INTENT_BADGE.get(cls['intent'], cls['intent'])}`"]
+    if rec.get("diagnosis_group"):
+        tags.append(f"`{rec['diagnosis_group']}系`")
+    tags.append(f"`確信度: {cls.get('confidence','—')}`")
+    st.markdown(" &nbsp; ".join(tags), unsafe_allow_html=True)
+    if rec.get("diagnosis_seo_active") is False:
+        st.caption("🆕 この診断はSEOではまだ未使用 → 新規設置になる")
 
     # ▼ ヒーロー② 出すPU文言（コピーボタン付きで目立たせる）
     st.markdown("##### 💬 この記事に出すPU文言")
@@ -104,10 +104,11 @@ if run:
     with st.expander("なぜこの判定？（根拠を見る）"):
         st.markdown(f"**検索意図の理由：** {cls['intent_reason']}")
         st.markdown(f"**訴求軸の理由：** {cls['axis_reason']}")
-        st.markdown(f"**診断タイプの根拠：** {rec['diagnosis_basis']}")
+        st.markdown(f"**診断の選定根拠：** {rec['diagnosis_basis']}")
         st.caption(f"💡 {rec['rule_reason']}（相性が合えば想定FCVR ×{rec['expected_fcvr_lift']}）")
-        if rec["genre_types"]:
-            st.caption(f"このジャンルの実績診断タイプ → {', '.join(rec['genre_types'])}")
+        if rec.get("all_diagnoses"):
+            names = "・".join(d["name"] for d in rec["all_diagnoses"])
+            st.caption(f"このジャンルの診断カタログ → {names}")
 
     # 注意・警告（あれば目立たせる）
     for w in rec["warnings"]:
@@ -121,3 +122,16 @@ if run:
         with st.expander(f"このジャンルの既存PU文言 全{len(rec['all_pu_variants'])}本を見る"):
             for v in rec["all_pu_variants"]:
                 st.markdown(f"- `{v.get('appeal_axis','?')}` 「{v.get('copy','')}」")
+
+# ── ジャンル別 診断カタログ（いつでも見れる）──────────────────
+st.divider()
+with st.expander("📚 ジャンル別 診断カタログを見る（全9ジャンル）"):
+    st.caption(
+        "各ジャンルに今ある診断の一覧。"
+        "グループ：方法系 / 薬系 / 選択系（集客・クリニック・選び方は選択系で1グループ）"
+    )
+    for label, dxs in GENRE_CATALOG.items():
+        st.markdown(f"**{label}** … {len(dxs)}種")
+        for d in dxs:
+            suffix = "" if d.get("seo_active") else "・SEO未使用"
+            st.markdown(f"- {d['name']}（{d['group']}系{suffix}）")
