@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 from lib.genre_catalog import GROUP_LABEL, diagnoses_for
+from lib.pu_templates import template_pu
 from lib.rules import (
     APPEAL_AXES,
     GENRES,
@@ -95,15 +96,16 @@ def recommend(classification: dict, genre_label: str) -> dict:
     variants_by_axis = pu_variants_by_axis(pu_key)
     pu_variants = variants_by_axis.get(axis, [])
     all_variants = [v for vs in variants_by_axis.values() for v in vs]
+    template_variants = [{"copy": t, "appeal_axis": axis} for t in template_pu(genre_label, axis)]
     if pu_variants:
         pu_status = "matched"
         pu_inventory_note = f"この訴求軸の既存PU文言が {len(pu_variants)} 本。これを使う"
-    elif all_variants:
-        pu_status = "closest"
-        pu_inventory_note = "この軸ピッタリの既存PUは無いが、下の既存PUから一番近いものを流用する"
+    elif template_variants:
+        pu_status = "template"
+        pu_inventory_note = "この軸の既存PUは在庫なし → 既存の勝ちパターンから下書きを生成（コピーして微調整）"
     else:
         pu_status = "escalate"
-        pu_inventory_note = "このジャンルはPU在庫が空 → 工藤さんに相談"
+        pu_inventory_note = "下書きも作れない（想定外）→ 工藤さんに相談"
 
     return {
         "diagnosis_name": chosen["name"] if chosen else "（カタログ未登録）",
@@ -117,6 +119,7 @@ def recommend(classification: dict, genre_label: str) -> dict:
         "warnings": warnings,
         "pu_variants": pu_variants,
         "all_pu_variants": all_variants,
+        "template_variants": template_variants,
         "pu_status": pu_status,
         "pu_inventory_note": pu_inventory_note,
         "expected_fcvr_lift": rule["expected_fcvr_lift"],

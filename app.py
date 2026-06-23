@@ -92,12 +92,17 @@ if run:
         st.caption("↓ この訴求軸の既存文言。右上のアイコンでコピーして使う")
         for v in rec["pu_variants"]:
             st.code(v.get("copy", ""), language=None)
-    elif rec["pu_status"] == "closest":
-        st.caption("この軸ピッタリは無いが、このジャンルの既存PUから近いものを流用 ↓")
-        for v in rec["all_pu_variants"]:
+    elif rec["pu_status"] == "template":
+        st.caption("この軸の既存PUは在庫なし → 勝ちパターンから下書きを生成。コピーして微調整 ↓")
+        for v in rec["template_variants"]:
             st.code(v.get("copy", ""), language=None)
+        # このジャンルに他軸の既存PUがあれば参考表示
+        if rec.get("all_pu_variants"):
+            with st.expander(f"参考：このジャンルの既存PU（他の軸）{len(rec['all_pu_variants'])}本"):
+                for v in rec["all_pu_variants"]:
+                    st.markdown(f"- `{v.get('appeal_axis','?')}` 「{v.get('copy','')}」")
     else:  # escalate
-        st.warning("🙋 このジャンルは既存PUの在庫が無い → **工藤さんに相談**（新規で作るか判断を仰ぐ）")
+        st.warning("🙋 下書きも作れない想定外ケース → **工藤さんに相談**")
 
     # 判定理由（折りたたみ。普段は結論だけ見たいので隠す）
     with st.expander("なぜこの判定？（根拠を見る）"):
