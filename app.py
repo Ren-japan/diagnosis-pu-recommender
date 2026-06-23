@@ -66,53 +66,57 @@ if run:
             st.stop()
         rec = recommend(cls, genre)
 
-    # ── 出力カード ──────────────────────────────────────
+    # ── 出力カード（初見でも"この2つを使えばOK"が一目でわかる構成）──────
     st.divider()
+    st.markdown("### ✅ この記事に設置するもの")
+    st.caption("下の ① と ② を記事に設定すればOKです。")
 
-    # ▼ ヒーロー① 設置する診断（カタログ上の実際の診断名）
-    st.markdown("##### 🎯 設置する診断")
-    st.markdown(
-        f"<div style='font-size:2rem;font-weight:800;line-height:1.2;margin:-4px 0 8px'>{rec['diagnosis_name']}</div>",
-        unsafe_allow_html=True,
-    )
-    tags = [f"`検索意図: {INTENT_BADGE.get(cls['intent'], cls['intent'])}`"]
-    if rec.get("diagnosis_group"):
-        tags.append(f"`{rec['diagnosis_group']}系`")
-    tags.append(f"`確信度: {cls.get('confidence','—')}`")
-    st.markdown(" &nbsp; ".join(tags), unsafe_allow_html=True)
-    if rec.get("diagnosis_seo_active") is False:
-        st.caption("🆕 この診断はSEOではまだ未使用 → 新規設置になる")
+    # ▼ カード① 推奨診断 ──────────────────────────────
+    with st.container(border=True):
+        st.markdown("**① 推奨診断**")
+        st.markdown(
+            f"<div style='font-size:2rem;font-weight:800;line-height:1.2;margin:2px 0 6px'>{rec['diagnosis_name']}</div>",
+            unsafe_allow_html=True,
+        )
+        if rec.get("diagnosis_group_label"):
+            st.caption(f"📌 {rec['diagnosis_group_label']}")
+        if rec.get("diagnosis_seo_active") is False:
+            st.caption("🆕 この診断はSEOでまだ未使用 → 新しく用意が必要です")
 
-    # ▼ ヒーロー② 出すPU文言（コピーボタン付きで目立たせる）
-    st.markdown("##### 💬 この記事に出すPU文言")
-    st.markdown(
-        f"推奨訴求軸：**{AXIS_BADGE.get(rec['axis'], rec['axis'])}** — {rec['axis_label']}"
-    )
-    if rec["pu_status"] == "matched":
-        st.caption("↓ この訴求軸の既存文言。右上のアイコンでコピーして使う")
-        for v in rec["pu_variants"]:
+    # ▼ カード② 推奨PUバナー文言 ──────────────────────
+    with st.container(border=True):
+        st.markdown("**② 推奨PUバナー文言**")
+        if rec["pu_status"] == "matched":
+            st.caption("✅ 既にあるバナー文言です。そのまま使えます（右上の📋でコピー）")
+            items = rec["pu_variants"]
+        elif rec["pu_status"] == "template":
+            st.caption("✏️ 下書きです。コピーして少しだけ整えてください（右上の📋でコピー）")
+            items = rec["template_variants"]
+        else:  # escalate
+            items = []
+            st.warning("🙋 これは自動で出せないケースです → **工藤さんに相談**")
+        for v in items:
             st.code(v.get("copy", ""), language=None)
-    elif rec["pu_status"] == "template":
-        st.caption("この軸の既存PUは在庫なし → 勝ちパターンから下書きを生成。コピーして微調整 ↓")
-        for v in rec["template_variants"]:
-            st.code(v.get("copy", ""), language=None)
-        # このジャンルに他軸の既存PUがあれば参考表示
-        if rec.get("all_pu_variants"):
-            with st.expander(f"参考：このジャンルの既存PU（他の軸）{len(rec['all_pu_variants'])}本"):
-                for v in rec["all_pu_variants"]:
-                    st.markdown(f"- `{v.get('appeal_axis','?')}` 「{v.get('copy','')}」")
-    else:  # escalate
-        st.warning("🙋 下書きも作れない想定外ケース → **工藤さんに相談**")
+        if items:
+            st.caption("↑ どれか1つを選んでバナーに使えばOK")
 
-    # 判定理由（折りたたみ。普段は結論だけ見たいので隠す）
-    with st.expander("なぜこの判定？（根拠を見る）"):
-        st.markdown(f"**検索意図の理由：** {cls['intent_reason']}")
-        st.markdown(f"**訴求軸の理由：** {cls['axis_reason']}")
+    # ▼ 詳細（専門用語はここに隠す。普段は見なくていい）──────────
+    with st.expander("ℹ️ 判定の詳細を見る（くわしく知りたい人だけ）"):
+        st.markdown(
+            f"**検索意図：** {INTENT_BADGE.get(cls['intent'], cls['intent'])} — {cls['intent_reason']}"
+        )
+        st.markdown(
+            f"**訴求軸：** {AXIS_BADGE.get(rec['axis'], rec['axis'])} — {cls['axis_reason']}"
+        )
         st.markdown(f"**診断の選定根拠：** {rec['diagnosis_basis']}")
-        st.caption(f"💡 {rec['rule_reason']}（相性が合えば想定FCVR ×{rec['expected_fcvr_lift']}）")
+        st.caption(f"確信度 {cls.get('confidence','—')}／相性が合えば想定FCVR ×{rec['expected_fcvr_lift']}")
         if rec.get("all_diagnoses"):
             names = "・".join(d["name"] for d in rec["all_diagnoses"])
             st.caption(f"このジャンルの診断カタログ → {names}")
+        if rec["pu_status"] == "template" and rec.get("all_pu_variants"):
+            st.markdown(f"**参考：このジャンルの既存PU（他の軸）{len(rec['all_pu_variants'])}本**")
+            for v in rec["all_pu_variants"]:
+                st.markdown(f"- `{v.get('appeal_axis','?')}` 「{v.get('copy','')}」")
 
     # 注意・警告（あれば目立たせる）
     for w in rec["warnings"]:
@@ -120,12 +124,6 @@ if run:
             st.warning(w)
         else:
             st.info(w)
-
-    # このジャンルの全PU文言（軸を問わず。anxiety/benefitなど3軸外も見せる）
-    if rec.get("all_pu_variants"):
-        with st.expander(f"このジャンルの既存PU文言 全{len(rec['all_pu_variants'])}本を見る"):
-            for v in rec["all_pu_variants"]:
-                st.markdown(f"- `{v.get('appeal_axis','?')}` 「{v.get('copy','')}」")
 
 # ── ジャンル別 診断カタログ（いつでも見れる）──────────────────
 st.divider()
