@@ -75,6 +75,21 @@ GENRE_CATALOG: dict[str, list[dict]] = {
 }
 
 
+# 各ジャンルの既存PU在庫(pu_master)が「どの診断グループのPUか」。
+# 例: ダイエットの離脱PU在庫はすべて「ダイエット方法診断」のもの＝方法系。
+#     なので薬診断・クリニック診断の記事には流用しない（診断とPUのミスマッチ防止）。
+STOCK_DIAGNOSIS_GROUP = {
+    "医療ダイエット(GLP-1)": "方法診断",
+    "包茎手術": "集客診断",
+    "AGA": "集客診断",  # AGAクリニック診断のPU
+}
+
+
 def diagnoses_for(genre_label: str) -> list[dict]:
     """指定ジャンルの診断リストを返す（未登録なら空）"""
     return GENRE_CATALOG.get(genre_label, [])
+
+
+def stock_group_for(genre_label: str) -> str | None:
+    """ジャンルの既存PU在庫が属する診断グループ（無ければNone）"""
+    return STOCK_DIAGNOSIS_GROUP.get(genre_label)

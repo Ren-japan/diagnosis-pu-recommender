@@ -9,7 +9,7 @@
 
 from __future__ import annotations
 
-from lib.genre_catalog import GROUP_LABEL, diagnoses_for
+from lib.genre_catalog import GROUP_LABEL, diagnoses_for, stock_group_for
 from lib.pu_templates import template_pu
 from lib.rules import (
     APPEAL_AXES,
@@ -91,12 +91,18 @@ def recommend(classification: dict, genre_label: str) -> dict:
     chosen, basis = _choose_diagnosis(intent, axis, genre_label, diagnoses, rule, warnings)
 
     # ── PU訴求軸まわり（既存からマッチング。基本"作れ"とは言わない）─────
-    # pu_status: matched=推奨軸に既存あり / closest=他軸の既存から流用 / escalate=在庫ゼロ→工藤相談
+    # pu_status: matched=推奨診断の既存PUあり / template=下書き生成 / escalate=想定外→工藤相談
+    # ★既存PU在庫は「その在庫が属する診断グループ」と「設置する診断のグループ」が
+    #   一致する時だけ使う（薬診断の記事に方法診断のPUを出すミスマッチを防ぐ）
+    chosen_group = chosen["group"] if chosen else None
+    stock_group = stock_group_for(genre_label)
+    stock_usable = bool(chosen_group and stock_group == chosen_group)
+
     pu_key = GENRES.get(genre_label, {}).get("pu_key")
-    variants_by_axis = pu_variants_by_axis(pu_key)
+    variants_by_axis = pu_variants_by_axis(pu_key) if stock_usable else {}
     pu_variants = variants_by_axis.get(axis, [])
     all_variants = [v for vs in variants_by_axis.values() for v in vs]
-    template_variants = [{"copy": t, "appeal_axis": axis} for t in template_pu(genre_label, axis)]
+    template_variants = [{"copy": t, "appeal_axis": axis} for t in template_pu(genre_label, chosen_group, axis)]
     if pu_variants:
         pu_status = "matched"
         pu_inventory_note = f"この訴求軸の既存PU文言が {len(pu_variants)} 本。これを使う"
