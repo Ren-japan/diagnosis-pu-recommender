@@ -18,10 +18,24 @@ from lib.rules import (
 )
 
 
+# 記事の訴求軸 → 優先したい診断グループの対応（複数候補がある時の絞り込み用）
+AXIS_TO_GROUP = {"method": "方法診断", "choice": "集客診断"}
+
+
 def _prefer_active(diagnoses: list[dict]) -> dict:
     """SEO稼働中の診断を優先して1件返す（無ければ先頭）"""
     active = [d for d in diagnoses if d.get("seo_active")]
     return active[0] if active else diagnoses[0]
+
+
+def _pick(diagnoses: list[dict], axis: str) -> dict:
+    """候補から1件選ぶ：記事の軸に合うグループ → SEO稼働中、の順で優先"""
+    target = AXIS_TO_GROUP.get(axis)
+    if target:
+        axis_matched = [d for d in diagnoses if d["group"] == target]
+        if axis_matched:
+            return _prefer_active(axis_matched)
+    return _prefer_active(diagnoses)
 
 
 def _is_exception(genre_label: str, exceptions: list[str]) -> bool:
@@ -29,7 +43,7 @@ def _is_exception(genre_label: str, exceptions: list[str]) -> bool:
     return any(e in genre_label for e in exceptions)
 
 
-def _choose_diagnosis(intent, genre_label, diagnoses, rule, warnings) -> tuple[dict | None, str]:
+def _choose_diagnosis(intent, axis, genre_label, diagnoses, rule, warnings) -> tuple[dict | None, str]:
     """設置すべき診断を1件選ぶ。warnings に注意文を追記（副作用）。"""
     if not diagnoses:
         warnings.append("ℹ️ このジャンルは診断カタログ未登録。検索意図ベースの一般推奨のみ")
@@ -39,20 +53,20 @@ def _choose_diagnosis(intent, genre_label, diagnoses, rule, warnings) -> tuple[d
     mismatch = rule["mismatch"]
     exceptions = rule["genre_exceptions"]
 
-    # 指名: どの診断でもCV可。稼働中を優先
+    # 指名: どの診断でもCV可。軸に合うもの→稼働中を優先
     if intent == "指名":
-        d = _prefer_active(diagnoses)
+        d = _pick(diagnoses, axis)
         return d, f"指名KWはどの診断でもCV可。このジャンルの診断「{d['name']}」を設置"
 
-    # 検索意図に相性の良いグループの診断があればそれ
+    # 検索意図に相性の良いグループの診断があればそれ（複数なら記事の軸で絞る）
     matches = [d for d in diagnoses if d["group"] in preferred]
     if matches:
-        d = _prefer_active(matches)
+        d = _pick(matches, axis)
         note = "" if d.get("seo_active") else "（※SEO未使用＝新規設置になる）"
         return d, f"検索意図「{intent}」に相性◎の{d['group']}系 → 「{d['name']}」{note}"
 
     # 相性グループの診断が無い → 手持ちから選ぶ
-    d = _prefer_active(diagnoses)
+    d = _pick(diagnoses, axis)
     if d["group"] in mismatch:
         if _is_exception(genre_label, exceptions):
             return d, f"通常「{intent}」×{d['group']}系は飛躍があるが、{genre_label}は例外なのでOK → 「{d['name']}」"
@@ -73,7 +87,7 @@ def recommend(classification: dict, genre_label: str) -> dict:
     diagnoses = diagnoses_for(genre_label)
     warnings: list[str] = []
 
-    chosen, basis = _choose_diagnosis(intent, genre_label, diagnoses, rule, warnings)
+    chosen, basis = _choose_diagnosis(intent, axis, genre_label, diagnoses, rule, warnings)
 
     # ── PU訴求軸まわり（既存からマッチング。基本"作れ"とは言わない）─────
     # pu_status: matched=推奨軸に既存あり / closest=他軸の既存から流用 / escalate=在庫ゼロ→工藤相談
