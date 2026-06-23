@@ -31,8 +31,8 @@ INTENT_BADGE = {
 
 st.title("🎯 診断PU推薦ツール")
 st.caption(
-    "記事本文を貼ってジャンルを選ぶと、相性の良い**診断タイプ**と**PU訴求軸タグ**を出します。"
-    "新記事にどのPUを設置するか迷ったらこれ。"
+    "記事本文を貼ってジャンルを選ぶと、**既存の診断・PUの中から一番マッチするもの**を出します。"
+    "どうしても既存に無いものだけ「工藤さんに相談」。"
 )
 
 # ── 入力 ────────────────────────────────────────────────
@@ -88,17 +88,16 @@ if run:
     st.markdown(
         f"推奨訴求軸：**{AXIS_BADGE.get(rec['axis'], rec['axis'])}** — {rec['axis_label']}"
     )
-    if rec["pu_variants"]:
-        st.caption("↓ この訴求軸の既存文言。右上のアイコンでコピーできる")
+    if rec["pu_status"] == "matched":
+        st.caption("↓ この訴求軸の既存文言。右上のアイコンでコピーして使う")
         for v in rec["pu_variants"]:
             st.code(v.get("copy", ""), language=None)
-    elif rec.get("all_pu_variants"):
-        st.warning(
-            f"この訴求軸（{rec['axis']}）の既存PUは無し。"
-            "下の「既存PU文言一覧」から近い軸を流用するか、この軸で新規作成。"
-        )
-    else:
-        st.info(f"このジャンルは既存PU未登録 → 上の訴求軸で新規作成を推奨")
+    elif rec["pu_status"] == "closest":
+        st.caption("この軸ピッタリは無いが、このジャンルの既存PUから近いものを流用 ↓")
+        for v in rec["all_pu_variants"]:
+            st.code(v.get("copy", ""), language=None)
+    else:  # escalate
+        st.warning("🙋 このジャンルは既存PUの在庫が無い → **工藤さんに相談**（新規で作るか判断を仰ぐ）")
 
     # 判定理由（折りたたみ。普段は結論だけ見たいので隠す）
     with st.expander("なぜこの判定？（根拠を見る）"):

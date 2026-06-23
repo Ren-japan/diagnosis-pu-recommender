@@ -75,21 +75,21 @@ def recommend(classification: dict, genre_label: str) -> dict:
 
     chosen, basis = _choose_diagnosis(intent, genre_label, diagnoses, rule, warnings)
 
-    # ── PU訴求軸まわり（pu_master の既存文言）──────────────────
+    # ── PU訴求軸まわり（既存からマッチング。基本"作れ"とは言わない）─────
+    # pu_status: matched=推奨軸に既存あり / closest=他軸の既存から流用 / escalate=在庫ゼロ→工藤相談
     pu_key = GENRES.get(genre_label, {}).get("pu_key")
     variants_by_axis = pu_variants_by_axis(pu_key)
     pu_variants = variants_by_axis.get(axis, [])
     all_variants = [v for vs in variants_by_axis.values() for v in vs]
-    if not pu_key or not all_variants:
-        pu_inventory_note = "このジャンルの既存PU在庫は未登録 → この訴求軸で新規作成を推奨"
-    elif pu_variants:
-        pu_inventory_note = f"既存PUあり：この訴求軸の文言が {len(pu_variants)} 本ストック"
+    if pu_variants:
+        pu_status = "matched"
+        pu_inventory_note = f"この訴求軸の既存PU文言が {len(pu_variants)} 本。これを使う"
+    elif all_variants:
+        pu_status = "closest"
+        pu_inventory_note = "この軸ピッタリの既存PUは無いが、下の既存PUから一番近いものを流用する"
     else:
-        other = [a for a in variants_by_axis if variants_by_axis[a]]
-        pu_inventory_note = (
-            f"この訴求軸の既存PUは在庫なし（在庫がある軸：{', '.join(other) or 'なし'}）"
-            " → この軸で新規作成を推奨"
-        )
+        pu_status = "escalate"
+        pu_inventory_note = "このジャンルはPU在庫が空 → 工藤さんに相談"
 
     return {
         "diagnosis_name": chosen["name"] if chosen else "（カタログ未登録）",
@@ -103,6 +103,7 @@ def recommend(classification: dict, genre_label: str) -> dict:
         "warnings": warnings,
         "pu_variants": pu_variants,
         "all_pu_variants": all_variants,
+        "pu_status": pu_status,
         "pu_inventory_note": pu_inventory_note,
         "expected_fcvr_lift": rule["expected_fcvr_lift"],
         "rule_reason": rule["reason"],
